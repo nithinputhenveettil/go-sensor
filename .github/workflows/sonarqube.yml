@@ -1,10 +1,6 @@
 name: Generate SonarQube report
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 jobs:
   build:
     name: Run analysis
@@ -17,6 +13,10 @@ jobs:
         run: |
             #!/bin/bash
 
+            TRACER_PATH=$(pwd)
+            echo $TRACER_PATH
+            mkdir coverage
+
             echo "Starting Couchbase"
             docker-compose -f docker-compose-integration.yaml up -d
 
@@ -25,27 +25,27 @@ jobs:
             sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'mysecretpassword'"
             echo "After starting Postgres"
 
-            go test -v -coverpkg=./... -cover -covermode atomic -coverprofile coverage.out ./... -json > coverage.json
+            go test -v -coverpkg=./... -cover -covermode atomic -coverprofile $TRACER_PATH/coverage/coverage.out ./... -json > $TRACER_PATH/coverage/coverage.json
 
             LIB_LIST=$(find ./instrumentation -name go.mod -exec dirname {} \;)
 
             for lib in $LIB_LIST
-              do echo "Generating test coverage for $lib" && cd "$lib" && go mod tidy && go test -v -coverpkg=./... -cover -covermode atomic -coverprofile coverage.out ./... -json > coverage.json && cd -;
+              do echo "Generating test coverage for $lib" && cd "$lib" && go mod tidy && go test -v -coverpkg=./... -cover -covermode atomic -coverprofile $TRACER_PATH/coverage/coverage_$(date +%s%N)_$RANDOM.out ./... -json > $TRACER_PATH/coverage/coverage_$(date +%s%N)_$RANDOM.json && cd -;
             done
 
             echo "Generating test coverage for ./instrumentation/instagocb"
             cd ./instrumentation/instagocb
             go mod tidy
-            go test -v -tags=integration -coverpkg=./... -cover -covermode atomic -coverprofile coverage.out ./... -json > coverage.json && cd -
+            go test -v -tags=integration -coverpkg=./... -cover -covermode atomic -coverprofile $TRACER_PATH/coverage/coverage_$(date +%s%N)_$RANDOM.out ./... -json > $TRACER_PATH/coverage/coverage_$(date +%s%N)_$RANDOM.json && cd -
 
             echo "Generating test coverage for ./instrumentation/instapgx"
             cd ./instrumentation/instapgx
             go mod tidy
-            go test -v -tags=integration -coverpkg=./... -cover -covermode atomic -coverprofile coverage.out ./... -json > coverage.json && cd -
+            go test -v -tags=integration -coverpkg=./... -cover -covermode atomic -coverprofile $TRACER_PATH/coverage/coverage_$(date +%s%N)_$RANDOM.out ./... -json > $TRACER_PATH/coverage/coverage_$(date +%s%N)_$RANDOM.json && cd -
 
-      - name: Sonarqube Scan
-        uses: sonarsource/sonarqube-scan-action@master
+      - name: Upload code coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: go-tracer-code-coverage
+          path: coverage
 
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
