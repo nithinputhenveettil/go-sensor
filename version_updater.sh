@@ -137,17 +137,19 @@ while IFS= read -r line; do
 
     echo "Update needed for this package. Update process starting..."
 
+    cd $folder
+
     # For some packages, eg : https://pkg.go.dev/github.com/instana/go-sensor/instrumentation/cloud.google.com/go/storage
     # The go.mod file will be in the previous directory
     # Need this check here to proceed to the correct directry containing go.mod
     LOCAL_PATH_2=$(go list -m | awk -F 'github.com/instana/go-sensor/' '{print $2}')
 
     if [ "$LOCAL_PATH" = "$LOCAL_PATH_2" ]; then
-        cd "$folder" || continue
+        continue
     else
         # change working folder to the correct path
-         folder=$TRACER_PATH/$LOCAL_PATH_2
-         cd "$folder" || continue
+        folder=$TRACER_PATH/$LOCAL_PATH_2
+        cd "$folder" || continue
     fi
 
     go get "$TARGET_PKG_URL"
