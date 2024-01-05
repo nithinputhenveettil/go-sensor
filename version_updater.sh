@@ -145,7 +145,7 @@ while IFS= read -r line; do
     LOCAL_PATH_2=$(go list -m | awk -F 'github.com/instana/go-sensor/' '{print $2}')
 
     if [ "$LOCAL_PATH" = "$LOCAL_PATH_2" ]; then
-        continue
+        echo "No need to change working directory!"
     else
         # change working folder to the correct path
         folder=$TRACER_PATH/$LOCAL_PATH_2
