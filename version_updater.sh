@@ -157,7 +157,7 @@ while IFS= read -r line; do
     go test ./... || echo "Continuing the operation even if the test fails. This needs manual intervention"
 
     # Need to update the current version in the supported_versions.md file
-    new_line=$(echo "$line" | awk -v old_value="$CURRENT_VERSION" -v new_value="$LATEST_VERSION" '{ gsub(old_value, new_value, $0); print }')
+    new_line=$(echo "$line" | awk -v old_value="$CURRENT_VERSION" -v new_value="$LATEST_VERSION" '{ for (i=NF; i>0; i--) if ($i == old_value) { $i = new_value; break } }1')
     awk -v new_line="$new_line" '{ if ($0 == old_line) print new_line; else print }' old_line="$line" $LIBRARY_INFO_MD_PATH > $LIBRARY_INFO_MD_TMP && mv $LIBRARY_INFO_MD_TMP $LIBRARY_INFO_MD_PATH
 
 
