@@ -29,11 +29,12 @@ jobs:
             echo "Installing gvm"
             bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
 
+            cat /home/runner/.gvm/scripts/gvm
+            
             source /home/runner/.gvm/scripts/gvm
 
             echo "check gvm version"
 
-            cat /home/runner/.gvm/scripts/gvm
 
             gvm version
 
