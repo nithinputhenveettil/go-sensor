@@ -1,0 +1,40 @@
+name: Run unit & integration tests against Golang RC version
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  build:
+    name: RC version check
+    runs-on: ubuntu-latest
+    # env:
+    #   # COSMOS_CONNECTION_URL: ${{ secrets.COSMOS_CONNECTION_URL }}
+    #   # COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Run coverage commands
+        run: |
+            #!/bin/bash
+
+            echo "Dealing with Golang RC version!"
+
+            echo "gvm - Go Version Manager"
+            echo "Installing gvm dependencies"
+            sudo apt-get install curl git mercurial make binutils bison gcc build-essential
+
+            echo "Installing gvm"
+            bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+
+            source ~/.gvm/scripts/gvm
+
+            gvm listall
+
+            rcToInstall=$(gvm listall | grep rc | grep 23 | tail -1)
+
+            echo "RC version : $rcToInstall"
+
+
+
