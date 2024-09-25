@@ -33,6 +33,8 @@ jobs:
 
             echo "check gvm version"
 
+            cat /home/runner/.gvm/scripts/gvm
+
             gvm version
 
             # rcToInstall=$(gvm listall | grep rc | grep 23 | tail -1)
