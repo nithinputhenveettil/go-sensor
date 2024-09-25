@@ -16,6 +16,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Run coverage commands
+        shell: bash
         run: |
             #!/bin/bash
 
@@ -28,13 +29,14 @@ jobs:
             echo "Installing gvm"
             bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
 
-            # source /home/runner/.gvm/scripts/gvm
+            source /home/runner/.gvm/scripts/gvm
 
-            # gvm listall
+            gvm listall
 
-            # rcToInstall=$(gvm listall | grep rc | grep 23 | tail -1)
+            rcToInstall=$(gvm listall | grep rc | grep 23 | tail -1)
 
-            # echo "RC version : $rcToInstall"
+            echo "RC version : $rcToInstall"
+          
 
 
 
