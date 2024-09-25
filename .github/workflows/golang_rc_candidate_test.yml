@@ -29,12 +29,19 @@ jobs:
             echo "Installing gvm"
             bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
 
-            source /home/runner/.gvm/scripts/gvm
+      - name: Run coverage commands
+        shell: bash
+        run: |
+            #!/bin/bash
+    
+            echo "RC RC"
 
+            which gvm
+    
             gvm listall
-
+    
             rcToInstall=$(gvm listall | grep rc | grep 23 | tail -1)
-
+    
             echo "RC version : $rcToInstall"
           
 
