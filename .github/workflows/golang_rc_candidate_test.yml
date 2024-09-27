@@ -32,8 +32,8 @@ jobs:
             ls ~/go/bin
             # which go1.23rc2
             # alias gorc="$rcToInstall"
-            go1.23rc2 download
-            go1.23rc2 version
+            ~/go/bin/go1.23rc2 download
+            ~/go/bin/go1.23rc2 version
 
 
           
