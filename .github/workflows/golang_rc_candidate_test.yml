@@ -28,6 +28,7 @@ jobs:
             echo "RC URL : $url"
             go install $url
             alias gorc="$rcToInstall"
+            shopt -s expand_aliases
 
             gorc download
             gorc version
