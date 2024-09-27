@@ -19,6 +19,7 @@ jobs:
         shell: bash
         run: |
             #!/bin/bash
+            shopt -s expand_aliases
 
             echo "Dealing with Golang RC version!"
             rcToInstall=$(git ls-remote -t https://github.com/golang/go | awk -F/ '{ print $NF }' | sort -V |grep rc | tail -1 | tr -d ' ')
@@ -28,8 +29,6 @@ jobs:
             echo "RC URL : $url"
             go install $url
             alias gorc="$rcToInstall"
-            shopt -s expand_aliases
-
             gorc download
             gorc version
 
