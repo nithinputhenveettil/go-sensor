@@ -21,6 +21,9 @@ jobs:
             #!/bin/bash
             shopt -s expand_aliases
 
+            TRACER_PATH=$(pwd)
+            echo $TRACER_PATH
+
             echo "Dealing with Golang RC version!"
             rcToInstall=$(git ls-remote -t https://github.com/golang/go | awk -F/ '{ print $NF }' | sort -V |grep rc | tail -1 | tr -d ' ')
             echo "RC version : $rcToInstall"
@@ -35,7 +38,15 @@ jobs:
             gorc download
             gorc version
 
+            echo "Starting Couchbase"
+            docker compose -f docker-compose-integration.yaml up -d
+            echo "Starting Postgres"
+            sudo systemctl start postgresql.service
+            sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'mysecretpassword'"
+            echo "After starting Postgres"
 
+            gorc test -v -coverpkg=./... -cover -covermode atomic ./... 
+            
           
 
 
