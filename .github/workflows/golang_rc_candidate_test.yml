@@ -21,8 +21,9 @@ jobs:
             #!/bin/bash
 
             echo "Dealing with Golang RC version!"
-            rcToInstall=$(gvm listall | grep rc | grep 23 | tail -1 | tr -d ' ')
+            rcToInstall=$(git ls-remote -t https://github.com/golang/go | awk -F/ '{ print $NF }' | grep rc | tail -1)
             echo "RC version : $rcToInstall"
+
 
           
 
