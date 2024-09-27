@@ -21,26 +21,8 @@ jobs:
             #!/bin/bash
 
             echo "Dealing with Golang RC version!"
-
-            echo "gvm - Go Version Manager"
-            echo "Installing gvm dependencies"
-            sudo apt-get install curl git mercurial make binutils bison gcc build-essential
-
-            echo "Installing gvm"
-            bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
-
-            cat /home/runner/.gvm/scripts/gvm
-            
-            source /home/runner/.gvm/scripts/gvm
-
-            echo "check gvm version"
-
-
-            gvm version
-
-            # rcToInstall=$(gvm listall | grep rc | grep 23 | tail -1)
-
-            # echo "RC version : $rcToInstall"
+            rcToInstall=$(gvm listall | grep rc | grep 23 | tail -1 | tr -d ' ')
+            echo "RC version : $rcToInstall"
 
           
 
