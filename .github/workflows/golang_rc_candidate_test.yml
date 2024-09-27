@@ -21,8 +21,16 @@ jobs:
             #!/bin/bash
 
             echo "Dealing with Golang RC version!"
-            rcToInstall=$(git ls-remote -t https://github.com/golang/go | awk -F/ '{ print $NF }' | grep rc | tail -1)
+            rcToInstall=$(git ls-remote -t https://github.com/golang/go | awk -F/ '{ print $NF }' | sort -V |grep rc | tail -1 | tr -d ' ')
             echo "RC version : $rcToInstall"
+
+            url="golang.org/dl/$rcToInstall@latest"
+            echo "RC URL : $url"
+            go install $url
+            alias gorc="$rcToInstall"
+
+            gorc download
+            gorc version
 
 
           
