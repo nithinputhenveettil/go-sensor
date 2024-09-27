@@ -28,8 +28,9 @@ jobs:
             url="golang.org/dl/$rcToInstall@latest"
             echo "RC URL : $url"
             go install $url
+            ls ~/go
             ls ~/go/bin
-            which go1.23rc2
+            # which go1.23rc2
             # alias gorc="$rcToInstall"
             go1.23rc2 download
             go1.23rc2 version
