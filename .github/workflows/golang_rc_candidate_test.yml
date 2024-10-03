@@ -34,7 +34,7 @@ jobs:
             go install $url
             ls ~/go
             ls ~/go/bin
-            # which go1.23rc2
+
             alias gorc="~/go/bin/$rcToInstall"
             gorc download
             gorc version
@@ -47,7 +47,7 @@ jobs:
             echo "After starting Postgres"
 
             echo "Running unit test on core."
-            gorc1 test -v -coverpkg=./... -cover -covermode atomic ./... 
+            gorc test -v -coverpkg=./... -cover -covermode atomic ./... 
 
             DEPRECATED_PKGS=".*instaamqp$"
 
