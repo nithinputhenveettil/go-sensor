@@ -18,6 +18,7 @@ jobs:
       - name: Run coverage commands
         shell: bash
         id: run_tests_with_rc
+        continue-on-error: true
         run: |
             #!/bin/bash
             shopt -s expand_aliases
@@ -70,7 +71,7 @@ jobs:
             echo "GO_RC_VERSION=$rcToInstall" >> $GITHUB_ENV
           
       - name: Send sucess to slack channel
-        if: ${{ steps.run_tests_with_rc.conclusion == 'success'}}
+        if: ${{ steps.run_tests_with_rc.outcome == 'success'}}
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
@@ -91,7 +92,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_RELEASE_CHANNEL_ID: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
       - name: Send sucess to slack channel
-        if: ${{ steps.run_tests_with_rc.conclusion == 'failure'}}
+        if: ${{ steps.run_tests_with_rc.outcome == 'failure'}}
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
