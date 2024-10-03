@@ -45,7 +45,7 @@ jobs:
             echo "After starting Postgres"
 
             echo "Running unit test on core."
-            gorc test -v -coverpkg=./... -cover -covermode atomic ./... 
+            gorc1 test -v -coverpkg=./... -cover -covermode atomic ./... 
 
             DEPRECATED_PKGS=".*instaamqp$"
 
