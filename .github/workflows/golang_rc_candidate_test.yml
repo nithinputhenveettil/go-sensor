@@ -67,19 +67,21 @@ jobs:
             done
 
             echo "All done!"
+            echo "GO_RC_VERSION=$rcToInstall" >> $GITHUB_ENV
+          
       - name: Send result to slack channel
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
           payload: |
             {
-              "text": ":mega: *Go Tracer team* : Go package done done - ddsdsdscsc",
+              "text": ":mega: Unit tests run with Golang RC version-${{ env.GO_RC_VERSION }} - sucess:tada:",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Done done done"
+                    "text": ":mega: Unit tests run with Golang RC version-${{ env.GO_RC_VERSION }} - sucess:tada:"
                   }
                 }
               ]
