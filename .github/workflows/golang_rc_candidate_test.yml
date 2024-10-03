@@ -67,3 +67,20 @@ jobs:
             done
 
             echo "All done!"
+      - name: Send result to slack channel
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
+          payload: |
+            {
+              "text": ":mega: *Go Tracer team* : Go package done done - ddsdsdscsc",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Done done done"
+                  }
+                }
+              ]
+            }
