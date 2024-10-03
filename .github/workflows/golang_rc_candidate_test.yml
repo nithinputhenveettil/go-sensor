@@ -20,7 +20,6 @@ jobs:
         run: |
             #!/bin/bash
             shopt -s expand_aliases
-
             TRACER_PATH=$(pwd)
             echo $TRACER_PATH
 
@@ -69,19 +68,20 @@ jobs:
             echo "All done!"
             echo "GO_RC_VERSION=$rcToInstall" >> $GITHUB_ENV
           
-      - name: Send result to slack channel
+      - name: Send sucess to slack channel
+        if: ${{ success() }}
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
           payload: |
             {
-              "text": ":mega: Unit tests run with Golang RC version-${{ env.GO_RC_VERSION }} - sucess:tada:",
+              "text": ":mega: Unit tests executed successfully with Golang RC version ${{ env.GO_RC_VERSION }}. :tada:",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":mega: Unit tests run with Golang RC version-${{ env.GO_RC_VERSION }} - sucess:tada:"
+                    "text": ":mega: Unit tests executed successfully with Golang RC version ${{ env.GO_RC_VERSION }}. :tada:"
                   }
                 }
               ]
@@ -89,3 +89,25 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_RELEASE_CHANNEL_ID: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
+      - name: Send sucess to slack channel
+        if: ${{ cancelled() }}
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
+          payload: |
+            {
+              "text": ":alert2: Unit tests run with Golang RC version ${{ env.GO_RC_VERSION }} have failed! :alert2:",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":alert2: Unit tests run with Golang RC version ${{ env.GO_RC_VERSION }} have failed! :alert2:"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_RELEASE_CHANNEL_ID: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
+          
