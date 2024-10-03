@@ -28,6 +28,7 @@ jobs:
             echo "Dealing with Golang RC version!"
             rcToInstall=$(git ls-remote -t https://github.com/golang/go | awk -F/ '{ print $NF }' | sort -V | grep rc | tail -1 | tr -d ' ')
             echo "RC version : $rcToInstall"
+            echo "GO_RC_VERSION=$rcToInstall" >> $GITHUB_ENV
 
             url="golang.org/dl/$rcToInstall@latest"
             echo "RC URL : $url"
@@ -68,7 +69,6 @@ jobs:
             done
 
             echo "All done!"
-            echo "GO_RC_VERSION=$rcToInstall" >> $GITHUB_ENV
           
       - name: Send sucess to slack channel
         if: ${{ steps.run_tests_with_rc.outcome == 'success'}}
@@ -91,7 +91,7 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_RELEASE_CHANNEL_ID: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
-      - name: Send sucess to slack channel
+      - name: Send failure to slack channel
         if: ${{ steps.run_tests_with_rc.outcome == 'failure'}}
         uses: slackapi/slack-github-action@v1.24.0
         with:
