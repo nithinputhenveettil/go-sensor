@@ -17,6 +17,7 @@ jobs:
           fetch-depth: 0
       - name: Run coverage commands
         shell: bash
+        id: run_tests_with_rc
         run: |
             #!/bin/bash
             shopt -s expand_aliases
@@ -24,7 +25,7 @@ jobs:
             echo $TRACER_PATH
 
             echo "Dealing with Golang RC version!"
-            rcToInstall=$(git ls-remote -t https://github.com/golang/go | awk -F/ '{ print $NF }' | sort -V |grep rc | tail -1 | tr -d ' ')
+            rcToInstall=$(git ls-remote -t https://github.com/golang/go | awk -F/ '{ print $NF }' | sort -V | grep rc | tail -1 | tr -d ' ')
             echo "RC version : $rcToInstall"
 
             url="golang.org/dl/$rcToInstall@latest"
@@ -69,7 +70,7 @@ jobs:
             echo "GO_RC_VERSION=$rcToInstall" >> $GITHUB_ENV
           
       - name: Send sucess to slack channel
-        if: ${{ success() }}
+        if: ${{ steps.run_tests_with_rc.conclusion == 'success'}}
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
@@ -90,7 +91,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_RELEASE_CHANNEL_ID: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
       - name: Send sucess to slack channel
-        if: ${{ cancelled() }}
+        if: ${{ steps.run_tests_with_rc.conclusion == 'failure'}}
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.SLACK_RELEASE_CHANNEL_ID }}
