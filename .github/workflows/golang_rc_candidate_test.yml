@@ -45,9 +45,25 @@ jobs:
             sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'mysecretpassword'"
             echo "After starting Postgres"
 
+            echo "Running unit test on core."
             gorc test -v -coverpkg=./... -cover -covermode atomic ./... 
-            
-          
 
+            DEPRECATED_PKGS=".*instaamqp$"
 
+            LIB_LIST=$(find ./instrumentation -name go.mod -exec dirname {} \; | grep -E -v "$DEPRECATED_PKGS")
 
+            for lib in $LIB_LIST
+              do echo "Running unit test for $lib" && cd "$lib" && gorc mod tidy && gorc test -v -coverpkg=./... -cover -covermode atomic ./... && cd -;
+            done
+
+            INTEGRATIONS_TESTS=("instagocb" "instapgx" "instacosmos" "instapgx/v2")
+
+            for str in ${INTEGRATIONS_TESTS[@]}; do
+              dir=./instrumentation/$str
+              echo "Running unit test for $dir"
+              cd $dir
+              gorc mod tidy
+              gorc test -v -tags=integration -coverpkg=./... -cover -covermode atomic ./... && cd -
+            done
+
+            echo "All done!"
