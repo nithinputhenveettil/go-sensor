@@ -51,6 +51,7 @@ build_patch() {
 ## Script starts here
 
 # Check if base branch and early exit if it doesnt
+BASE_BRANCH="${REF_BASE_BRANCH#refs/heads/}"
 case "$BASE_BRANCH" in
   main)
     echo "Base branch main, continuing with public release."

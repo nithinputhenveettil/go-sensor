@@ -48,7 +48,7 @@ jobs:
         INSTANA_PACKAGE_NAME: ${{ inputs.packageName }}
         LIB_VERSION_TYPE: ${{ inputs.versionType }}
         RELEASE_AS_DRAFT: ${{ inputs.asDraft }}
-        BASE_BRANCH: ${{github.ref}}
+        REF_BASE_BRANCH: ${{github.ref}}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GIT_AUTHOR_NAME: ${{ github.actor }}
         GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
