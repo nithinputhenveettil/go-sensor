@@ -73,7 +73,7 @@ echo "lib path: $LIB_PATH"
 # Expected to find something like: instrumentation/instaredis/v1.5.0
 # This option will be used if the instrumentation has no v2 subfolder
 if [ "$BASE_BRANCH" = "main" ]; then
-  OPTIONAL_GREP_STR="^v[0-9]+\.[0-9]+\.[0-9]+$"
+  OPTIONAL_GREP_STR="v[0-9]+\.[0-9]+\.[0-9]+$"
   TAG_TO_SEARCH="v[0-1].[0-9]*.[0-9]*"
 else
   OPTIONAL_GREP_STR=""
