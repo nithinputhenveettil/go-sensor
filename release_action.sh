@@ -120,8 +120,10 @@ echo "New version to release is: $NEW_VERSION"
 # Updates the minor version in version.go
 sed -i -E "s/[0-9]+\.[0-9]+\.[0-9]+/${NEW_VERSION}/" version.go | tail -1
 
-git config user.name "IBM/Instana/Team Go"
-git config user.email "github-actions@github.com"
+# git config user.name "IBM/Instana/Team Go"
+# git config user.email "github-actions@github.com"
+
+git remote set-url --push origin https://$GIT_COMMITTER_NAME:$GITHUB_TOKEN@github.com/nithinputhenveettil/go-sensor
 
 git add version.go
 git commit -m "Updated version.go to $NEW_VERSION"
