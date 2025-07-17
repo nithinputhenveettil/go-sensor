@@ -58,9 +58,9 @@ LIB_PATH=.
 
 if [ "$INSTANA_PACKAGE_NAME" = "." ]; then
   IS_CORE="true"
-  echo "Releasing core module"
+  echo "Releasing core module from $BASE_BRANCH"
 else
-  echo "Releasing $INSTANA_PACKAGE_NAME"
+  echo "Releasing $INSTANA_PACKAGE_NAME from $BASE_BRANCH"
 fi
 
 if [ "$IS_CORE" = "false" ]; then
@@ -72,10 +72,16 @@ echo "lib path: $LIB_PATH"
 
 # Expected to find something like: instrumentation/instaredis/v1.5.0
 # This option will be used if the instrumentation has no v2 subfolder
-if [ "$IS_CORE" = "false" ]; then
-  TAG_TO_SEARCH="$LIB_PATH/v[0-1].*"
+if [ "$BASE_BRANCH" = "main" ]; then
+  OPTIONAL_GREP_STR="^v[0-9]+\.[0-9]+\.[0-9]+$"
+  TAG_TO_SEARCH="v[0-1].[0-9]*.[0-9]*"
 else
-  TAG_TO_SEARCH="v[0-1].*"
+  OPTIONAL_GREP_STR=""
+  TAG_TO_SEARCH="v[0-1].[0-9]*.[0-9]*-xyz"
+fi
+
+if [ "$IS_CORE" = "false" ]; then
+  TAG_TO_SEARCH="$LIB_PATH/$TAG_TO_SEARCH"
 fi
 
 # Only relevant for instrumentations
@@ -93,14 +99,17 @@ if [ "$IS_CORE" = "false" ]; then
     echo "New major version: $NEW_MAJOR_VERSION"
 
     # Expected to be tag name with major version higher than 1. eg: instrumentation/instaredis/v2.1.0
-    TAG_TO_SEARCH="$LIB_PATH.*"
+    if [ "$BASE_BRANCH" = "main" ]; then
+      TAG_TO_SEARCH="$LIB_PATH.[0-9]*.[0-9]*"
+    else
+      TAG_TO_SEARCH="$LIB_PATH.[0-9]*.[0-9]*-xyz"
   fi
 fi
 
 echo "Tag to search: $TAG_TO_SEARCH"
 
 # git fetch --unshallow --tags
-FOUND_VERSION_IN_TAG=$(git tag -l "$TAG_TO_SEARCH" | sort -V | tail -n1 | sed "s/.*v//")
+FOUND_VERSION_IN_TAG=$(git tag -l "$TAG_TO_SEARCH" | grep -E "$OPTIONAL_GREP_STR" | sort -V | tail -n1 | sed "s/.*v//")
 
 echo "Version found in tags: $FOUND_VERSION_IN_TAG"
 
@@ -117,6 +126,12 @@ elif [ "$LIB_VERSION_TYPE" = "minor" ]; then
   build_minor
 else
   build_patch
+fi
+
+if [ "$BASE_BRANCH" = "main" ]; then
+  NEW_VERSION="$NEW_VERSION"
+else
+  NEW_VERSION="$NEW_VERSION-xyz"
 fi
 
 echo "New version to release is: $NEW_VERSION"
