@@ -50,22 +50,7 @@ build_patch() {
 
 ## Script starts here
 
-# Check if base branch and early exit if it doesnt
-BASE_BRANCH="${REF_BASE_BRANCH#refs/heads/}"
-echo "Base branch, $REF_BASE_BRANCH, $BASE_BRANCH"
-case "$BASE_BRANCH" in
-  main)
-    echo "Base branch main, continuing with public release."
-    ;;
-  fedramp-main)
-    echo "Base branch fedramp-main, continuing with fedramp release."
-    ;;
-  *)
-    echo "Error: base branch needs to be main or fedramp-main."
-    echo "Base branch, $REF_BASE_BRANCH, $BASE_BRANCH"
-    exit 1
-    ;;
-esac
+echo "Base branch selected: $BASE_BRANCH"
 
 IS_CORE="false"
 
