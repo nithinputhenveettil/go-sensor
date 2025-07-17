@@ -62,6 +62,7 @@ case "$BASE_BRANCH" in
     ;;
   *)
     echo "Error: base branch needs to be main or fedramp-main."
+    echo "Base branch, $REF_BASE_BRANCH, $BASE_BRANCH"
     exit 1
     ;;
 esac
