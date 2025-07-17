@@ -138,7 +138,7 @@ fi
 echo "New version to release is: $NEW_VERSION"
 
 # Updates the minor version in version.go
-sed -i -E "s/[0-9]+\.[0-9]+\.[0-9]+/${NEW_VERSION}/" version.go | tail -1
+sed -i -E "s/[0-9]+\.[0-9]+\.[0-9]+(-xyz)?/${NEW_VERSION}/" version.go | tail -1
 
 # git config user.name "IBM/Instana/Team Go"
 # git config user.email "github-actions@github.com"
