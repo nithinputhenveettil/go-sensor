@@ -57,7 +57,7 @@ case "$BASE_BRANCH" in
   main)
     echo "Base branch main, continuing with public release."
     ;;
-  xyz-main)
+  fedramp-main)
     echo "Base branch fedramp-main, continuing with fedramp release."
     ;;
   *)
