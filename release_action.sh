@@ -103,6 +103,7 @@ if [ "$IS_CORE" = "false" ]; then
       TAG_TO_SEARCH="$LIB_PATH.[0-9]*.[0-9]*"
     else
       TAG_TO_SEARCH="$LIB_PATH.[0-9]*.[0-9]*-xyz"
+    fi
   fi
 fi
 
