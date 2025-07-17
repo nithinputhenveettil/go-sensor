@@ -48,6 +48,22 @@ build_patch() {
   NEW_VERSION="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION"
 }
 
+## Script starts here
+
+# Check if base branch and early exit if it doesnt
+case "$BASE_BRANCH" in
+  main)
+    echo "Base branch main, continuing with public release."
+    ;;
+  xyz-main)
+    echo "Base branch fedramp-main, continuing with fedramp release."
+    ;;
+  *)
+    echo "Error: base branch needs to be main or fedramp-main."
+    exit 1
+    ;;
+esac
+
 IS_CORE="false"
 
 LIB_PATH=.
