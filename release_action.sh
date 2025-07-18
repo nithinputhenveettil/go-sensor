@@ -110,7 +110,10 @@ if [ -z "$FOUND_VERSION_IN_TAG" ]; then
 fi
 
 if [ "$IS_FIRST_RELEASE" = "true" ]; then
-  NEW_VERSION=$(grep -oE '"[0-9]+\.[0-9]+\.[0-9]+"' version.go | sed 's/"//g')
+  NEW_VERSION=$(grep -oE '"[0-9]+\.[0-9]+\.[0-9]+(-xyz)?"' version.go | sed 's/"//g')
+  if [ -n "$NEW_VERSION" ]; then
+    echo "Cannot release with first release = true"
+  fi
 elif [ "$LIB_VERSION_TYPE" = "major" ]; then
   build_major
 elif [ "$LIB_VERSION_TYPE" = "minor" ]; then
