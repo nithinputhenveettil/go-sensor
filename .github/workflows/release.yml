@@ -90,9 +90,9 @@ jobs:
         # git config user.name "IBM/Instana/Team Go"
         # git config user.email "github-actions@github.com"
         git remote set-url --push origin https://$GIT_COMMITTER_NAME:$GITHUB_TOKEN@github.com/nithinputhenveettil/go-sensor
-        git checkout update-instrumentations-core/"$CORE_TAG" || git checkout -b update-instrumentations-core/"$CORE_TAG"
+        git checkout xyz-update-instrumentations-core/"$CORE_TAG" || git checkout -b xyz-update-instrumentations-core/"$CORE_TAG"
 
-        git pull origin "update-instrumentations-core/$CORE_TAG" || echo "Brand new branch. No need to pull from origin."
+        git pull origin "xyz-update-instrumentations-core/$CORE_TAG" || echo "Brand new branch. No need to pull from origin."
 
         # Updates all instrumentations to use the @latest version of the core module
         for lib in $LIB_LIST
@@ -113,13 +113,13 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ github.token }}
-        branch: update-instrumentations-core/${{ steps.create-branch.outputs.CORE_TAG }}
+        branch: xyz-update-instrumentations-core/${{ steps.create-branch.outputs.CORE_TAG }}
 
     - name: "Update all instrumentations: create pull request"
       if: "${{ success() && !success() && inputs.packageName == '.' }}"
       run: |
         CORE_TAG=${{ steps.create-branch.outputs.CORE_TAG }}
-        git checkout update-instrumentations-core/"$CORE_TAG"
+        git checkout xyz-update-instrumentations-core/"$CORE_TAG"
         gh pr create --title "Updating instrumentations to core module $CORE_TAG - xyz release" --body "This PR updates all instrumented packages to use the latest core module $CORE_TAG." --head $(git branch --show-current)
       env:
         GH_TOKEN: ${{ github.token }}
