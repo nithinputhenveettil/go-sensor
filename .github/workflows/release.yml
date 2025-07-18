@@ -31,6 +31,12 @@ on:
         default: true
         type: boolean
 
+      firstRelease:
+        description: 'Is this a first release?'
+        required: true
+        default: false
+        type: boolean
+
 jobs:
   do_release:
     name: Release
@@ -50,6 +56,7 @@ jobs:
         LIB_VERSION_TYPE: ${{ inputs.versionType }}
         RELEASE_AS_DRAFT: ${{ inputs.asDraft }}
         BASE_BRANCH: ${{ inputs.baseBranch }}
+        IS_FIRST_RELEASE: ${{ inputs.firstRelease }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GIT_AUTHOR_NAME: ${{ github.actor }}
         GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
