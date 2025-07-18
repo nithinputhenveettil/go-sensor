@@ -109,7 +109,9 @@ if [ -z "$FOUND_VERSION_IN_TAG" ]; then
   echo "Version updated to: $FOUND_VERSION_IN_TAG, and new major version is $NEW_MAJOR_VERSION"
 fi
 
-if [ "$LIB_VERSION_TYPE" = "major" ]; then
+if [ "$IS_FIRST_RELEASE" = "true" ]; then
+  NEW_VERSION=$(grep -oE '"[0-9]+\.[0-9]+\.[0-9]+"' version.go | sed 's/"//g')
+elif [ "$LIB_VERSION_TYPE" = "major" ]; then
   build_major
 elif [ "$LIB_VERSION_TYPE" = "minor" ]; then
   build_minor
@@ -117,11 +119,6 @@ else
   build_patch
 fi
 
-
-# dsdsdsdsbdjsbdjsdjsbdjs
-if [ "$IS_FIRST_RELEASE" = "true" ] && [ "$BASE_BRANCH" != "main" ]; then
-  NEW_VERSION=$(grep -oE '"[0-9]+\.[0-9]+\.[0-9]+"' version.go | sed 's/"//g')
-fi
 
 NEW_VERSION="$NEW_VERSION-xyz"
 
