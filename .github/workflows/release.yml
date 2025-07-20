@@ -93,7 +93,7 @@ jobs:
         done
 
         git add .
-        git commit -m "Updating instrumentations to core module $CORE_TAG - public release"
+        git commit -m "Updating instrumentations to core module $CORE_TAG"
 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -114,7 +114,7 @@ jobs:
       run: |
         CORE_TAG=${{ steps.create-branch.outputs.CORE_TAG }}
         git checkout update-instrumentations-core/"$CORE_TAG"
-        gh pr create --title "Updating instrumentations to core module $CORE_TAG - public release" --body "This PR updates all instrumented packages to use the latest core module $CORE_TAG." --head $(git branch --show-current)
+        gh pr create --title "[public-release] Updating instrumentations to core module $CORE_TAG" --body "This PR updates all instrumented packages to use the latest core module $CORE_TAG." --head $(git branch --show-current)
       env:
         GH_TOKEN: ${{ github.token }}
 
