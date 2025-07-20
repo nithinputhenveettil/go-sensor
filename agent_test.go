@@ -160,3 +160,4 @@ func (alwaysReadyClient) SendEvent(event *EventData) error                  { re
 func (alwaysReadyClient) SendSpans(spans []Span) error                      { return nil }
 func (alwaysReadyClient) SendProfiles(profiles []autoprofile.Profile) error { return nil }
 func (alwaysReadyClient) Flush(context.Context) error                       { return nil }
+
