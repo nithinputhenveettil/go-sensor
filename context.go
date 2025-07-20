@@ -9,6 +9,7 @@ import (
 	ot "github.com/opentracing/opentracing-go"
 )
 
+
 type contextKey struct{}
 
 var activeSpanKey contextKey
