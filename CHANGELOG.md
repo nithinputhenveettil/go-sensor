@@ -24,3 +24,4 @@ go-sensor project.
 * chore:Improvements in the currency automation script.
 * chore:Tekton pipeline for automating Go Tracer Currency Report.
 * chore:Support for GitHub action for release summary.
+
