@@ -212,6 +212,7 @@ func (a *agentCommunicator) sendDataToAgent(suffix string, data interface{}) err
 	return err
 }
 
+
 func newAgentCommunicator(host, port string, from *fromS, logger LeveledLogger) *agentCommunicator {
 	return &agentCommunicator{
 		host: host,
