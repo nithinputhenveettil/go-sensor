@@ -6,33 +6,45 @@ name: Release all updated instrumentations
 on:
   pull_request:
     branches:
-    - main
+    - xyz-main
     types:
       - closed
 
 jobs:
   release_instrumentations:
-    name: Release instrumentations
+    name: xyz - release all instrumentations
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'update-instrumentations-core')
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'xyz-update-instrumentations-core')
     steps:
     - uses: actions/checkout@v3
       name: Checkout repo
       with:
         fetch-depth: 0
-        ssh-key: ${{secrets.PRIVATE_KEY_GO_TRACER_RELEASE}}
+        ref: xyz-main
     - name: Release all packages
       id: release-packages
       run: |
-        CORE_TAG=$(git tag -l "v1.*" | sort -V | tail -n1)
+        # Variable to check if xyz-first-release label exists in PR
+        xyz-first-release="false"
+        if [[ "${{ contains(github.event.pull_request.labels.*.name, 'xyz-first-release') }}" == "true" ]]; then
+          IS_FIRST_RELEASE="true"
+        else
+          IS_FIRST_RELEASE="false"
+        fi
+        
+        echo "xyz-first-release label exists: $IS_FIRST_RELEASE"
+        
+        CORE_TAG=$(git tag -l "v1.*[0-9]*.[0-9]*-xyz" | sort -V | tail -n1)
 
-        git config user.name "IBM/Instana/Team Go"
-        git config user.email "github-actions@github.com"
+        # git config user.name "IBM/Instana/Team Go"
+        # git config user.email "github-actions@github.com"
 
         EXCLUDED_DIRS="\/.*\/example"
         DEPRECATED_PKGS=".*instaamqp$"
 
-        LIB_LIST=$(find ./instrumentation -name go.mod -exec dirname {} \; | grep -E -v "$EXCLUDED_DIRS" | grep -E -v "$DEPRECATED_PKGS")
+        LIB_LIST="./instrumentation/instaredis ./instrumentation/instaredis/v2"
+        
+        #LIB_LIST=$(find ./instrumentation -name go.mod -exec dirname {} \; | grep -E -v "$EXCLUDED_DIRS" | grep -E -v "$DEPRECATED_PKGS")
 
         TAGS=""
         for lib in $LIB_LIST
@@ -40,7 +52,7 @@ jobs:
 
           # Expected to find something like: instrumentation/instaredis/v1.5.0
           # This option will be used if the instrumentation has no v2 subfolder
-          TAG_TO_SEARCH="$LIB_PATH/v[0-1].*"
+          TAG_TO_SEARCH="$LIB_PATH/v[0-1].[0-9]*.[0-9]*-xyz"
 
           # Expected to identify packages with subfolders. eg: instrumentation/instaredis/v2
           NEW_VERSION_FOLDER=$(echo "$lib" | grep -E "/v[2-9].*")
@@ -52,34 +64,49 @@ jobs:
 
             # Expected to be tag name with major version higher than 1. eg: instrumentation/instaredis/v2.1.0
             PATH_WITHOUT_V=$(echo "$LIB_PATH" | sed "s/\/v[0-9]*//")
-            TAG_TO_SEARCH="$PATH_WITHOUT_V/v$NEW_MAJOR_VERSION.*"
+            TAG_TO_SEARCH="$PATH_WITHOUT_V/v$NEW_MAJOR_VERSION.[0-9]*.[0-9]*-xyz"
           fi
+
+          echo "TAG_TO_SEARCH: $TAG_TO_SEARCH"
 
           VERSION=$(git tag -l "$TAG_TO_SEARCH" | sort -V | tail -n1 | sed "s/.*v//")
 
           if [ -z "$VERSION" ]; then
             VERSION="0.0.0"
           fi
+          echo "VERSION: $VERSION"
 
-          MINOR_VERSION=$(echo "$VERSION" | sed -En 's/[0-9]+\.([0-9]+)\.[0-9]+/\1/p')
-          MAJOR_VERSION=$(echo "$VERSION" | sed -En 's/([0-9]+)\.[0-9]+\.[0-9]+/\1/p')
-          MINOR_VERSION=$((MINOR_VERSION+1))
-          NEW_VERSION="$MAJOR_VERSION.$MINOR_VERSION.0"
+          if [ "$IS_FIRST_RELEASE" = "true" ]; then
+            NEW_VERSION=$(grep -oE '"[0-9]+\.[0-9]+\.[0-9]+"' "$lib"/version.go | sed 's/"//g')
+            if [ "$NEW_VERSION" = "" ]; then
+              echo "Cannot release with first release = true"
+              exit 1
+            fi
+          else
+            MINOR_VERSION=$(echo "$VERSION" | sed -En 's/[0-9]+\.([0-9]+)\.[0-9]+.*/\1/p')
+            MAJOR_VERSION=$(echo "$VERSION" | sed -En 's/([0-9]+)\.[0-9]+\.[0-9]+.*/\1/p')
+            MINOR_VERSION=$((MINOR_VERSION+1))
+            NEW_VERSION="$MAJOR_VERSION.$MINOR_VERSION.0"
+          fi
+
+          NEW_VERSION="$NEW_VERSION-xyz"
+          echo "New version to release is: $NEW_VERSION"
 
           # Updates the minor version in version.go
           sed -i -E "s/[0-9]+\.[0-9]+\.[0-9]+/${NEW_VERSION}/" "$lib"/version.go | tail -1
 
           # Tags to be created after version.go is merged to the main branch with the new version
           PATH_WITHOUT_V=$(echo "$LIB_PATH" | sed "s/\/v[0-9]*//")
-          TAGS="$TAGS $PATH_WITHOUT_V/v$MAJOR_VERSION.$MINOR_VERSION.0"
+          TAGS="$TAGS $PATH_WITHOUT_V/v$NEW_VERSION"
         done
 
         echo "TAGS=$TAGS" >> "$GITHUB_OUTPUT"
 
-        # Commit all version.go files to the main branch
+        # Commit all version.go files to the xyz-main branch
+        git remote set-url --push origin https://$GIT_COMMITTER_NAME:$GITHUB_TOKEN@github.com/nithinputhenveettil/go-sensor
         git add ./instrumentation/**/version.go
         git add ./instrumentation/**/**/version.go
-        git commit -m "Updated instrumented packages with core module $CORE_TAG"
+        git commit -m "Updated instrumented packages with core module $CORE_TAG - xyz release"
         git push origin @
 
         echo "Creating tags for each instrumentation"
@@ -97,6 +124,11 @@ jobs:
       shell: bash {0}
       env:
         GH_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GIT_AUTHOR_NAME: ${{ github.event.pull_request.merged_by.login }}
+        GIT_AUTHOR_EMAIL: ${{ github.event.pull_request.merged_by.login }}@users.noreply.github.com
+        GIT_COMMITTER_NAME: ${{ github.event.pull_request.merged_by.login }}
+        GIT_COMMITTER_EMAIL: ${{ github.event.pull_request.merged_by.login }}@users.noreply.github.com  
 
     - name: Update pkg.go.dev
       run: |
