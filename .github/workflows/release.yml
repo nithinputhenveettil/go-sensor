@@ -93,7 +93,7 @@ jobs:
         done
 
         git add .
-        git commit -m "Updating instrumentations to core module $CORE_TAG - public release"
+        git commit -m "[public-release] Updating instrumentations to core module $CORE_TAG - public release"
 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
