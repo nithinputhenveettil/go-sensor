@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 build_major() {
   # Only 2 scenarios:
   # - v1 was never released, so FOUND_VERSION_IN_TAG=0.0.0 and NEW_MAJOR_VERSION is empty. NEW_VERSION should be 1.0.0
