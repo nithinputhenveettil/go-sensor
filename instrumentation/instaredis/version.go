@@ -3,4 +3,4 @@
 package instaredis
 
 // Version is the instrumentation module semantic version
-const Version = "1.33.0-xyz-xyz"
+const Version = "1.34.0-xyz-xyz-xyz"
