@@ -1,7 +1,7 @@
 # This workflow releases all instrumented packages updated to point to the latest core module.
 # It should run in the main branch after the PR created by the `Go Tracer Release` workflow is merged to main.
 
-name: Release all updated instrumentations
+name: Release all updated instrumentations - XYZ release
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ on:
 
 jobs:
   release_instrumentations:
-    name: xyz - release all instrumentations
+    name: Release all instrumentations
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'xyz-update-instrumentations-core')
     steps:

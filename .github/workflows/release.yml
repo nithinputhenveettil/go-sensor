@@ -55,7 +55,7 @@ jobs:
         GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
 
     - name: Update pkg.go.dev
-      if: "${{ success() && !success() && !inputs.asDraft }}"
+      if: "${{ success() && !inputs.asDraft }}"
       run: |
         #!/bin/bash
 
@@ -72,12 +72,12 @@ jobs:
         rm -rf dummy
 
     - name: "Update all instrumentations: create branch"
-      if: "${{ success() && !success() && inputs.packageName == '.' }}"
+      if: "${{ inputs.packageName == '.' }}"
       id: create-branch
       run: |
         #!/bin/bash
 
-        CORE_TAG=$(git tag -l "v1.*" | sort -V | tail -n1)
+        CORE_TAG=$(git tag -l "v1.*[0-9]*.[0-9]*-xyz" | sort -V | tail -n1)
 
         echo "CORE_TAG=$CORE_TAG" >> $GITHUB_OUTPUT
         echo "New core version is $CORE_TAG"
@@ -109,18 +109,18 @@ jobs:
         GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com  
 
     - name: "Update all instrumentations: push branch upstream"
-      if: "${{ success() && !success() && inputs.packageName == '.' }}"
+      if: "${{ success() && inputs.packageName == '.' }}"
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ github.token }}
         branch: xyz-update-instrumentations-core/${{ steps.create-branch.outputs.CORE_TAG }}
 
     - name: "Update all instrumentations: create pull request"
-      if: "${{ success() && !success() && inputs.packageName == '.' }}"
+      if: "${{ success() && inputs.packageName == '.' }}"
       run: |
         CORE_TAG=${{ steps.create-branch.outputs.CORE_TAG }}
         git checkout xyz-update-instrumentations-core/"$CORE_TAG"
-        gh pr create --title "Updating instrumentations to core module $CORE_TAG - xyz release" --body "This PR updates all instrumented packages to use the latest core module $CORE_TAG." --head $(git branch --show-current)
+        gh pr create --base xyz-main --title "[xyz-release] Updating instrumentations to core module $CORE_TAG" --body "This PR updates all instrumented packages to use the latest core module $CORE_TAG." --head $(git branch --show-current)
       env:
         GH_TOKEN: ${{ github.token }}
 
