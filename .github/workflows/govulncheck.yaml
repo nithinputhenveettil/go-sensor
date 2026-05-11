@@ -13,13 +13,33 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Run coverage commands
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: 'stable'
+          
+      - name: Run govulncheck commands
         run: |
             #!/bin/bash
 
-            go version
-            go install golang.org/x/vuln/cmd/govulncheck@latest
-            govulncheck version
+            set -euxo pipefail
 
-            govulncheck ./...
+            echo "::group::Go Environment"
+            which go
+            go version
+            go env
+            echo "::endgroup::"
+
+            echo "::group::Install govulncheck"
+            go install golang.org/x/vuln/cmd/govulncheck@latest
+
+            export PATH="$(go env GOPATH)/bin:$PATH"
+
+            which govulncheck
+            govulncheck -version
+            echo "::endgroup::"
+
+            echo "::group::Run govulncheck"
+            govulncheck -show verbose ./...
+            echo "::endgroup::"
             
