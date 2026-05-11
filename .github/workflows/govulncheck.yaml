@@ -1,0 +1,25 @@
+name: Run govulncheck
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  runGovulncheck:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Run coverage commands
+        run: |
+            #!/bin/bash
+
+            go version
+            go install golang.org/x/vuln/cmd/govulncheck@latest
+            govulncheck version
+
+            govulncheck ./...
+            
