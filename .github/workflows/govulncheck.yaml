@@ -31,6 +31,23 @@ jobs:
 
           export PATH="$(go env GOPATH)/bin:$PATH"
 
+          EXCLUDE_DIRS=(
+            "instrumentation/instaawssdk"
+            "instrumentation/instapgx"
+          )
+
+          should_exclude() {
+            local dir="$1"
+
+            for excluded in "${EXCLUDE_DIRS[@]}"; do
+              if [[ "$dir" == "$excluded" ]]; then
+                return 0
+              fi
+            done
+
+            return 1
+          }
+
           echo "::group::Go Environment"
           which go
           go version
@@ -53,6 +70,11 @@ jobs:
 
           find instrumentation -name go.mod | while read gomod; do
             module_dir=$(dirname "$gomod")
+
+            if should_exclude "$module_dir"; then
+              echo "Skipping excluded module: $module_dir"
+              continue
+            fi
 
             echo ""
             echo "========================================="
